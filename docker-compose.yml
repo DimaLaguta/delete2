@@ -1,5 +1,5 @@
 services:
-  database:
+  db:
     container_name: studio-startups-database
     image: postgres
     restart: always
@@ -10,12 +10,12 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - studio-startups-network
+      - network1
 
   backend:
     container_name: studio-startups-backend
     depends_on:
-      - database
+      - db
     restart: always
     image: andreyneverovich/studio-startups-backend:latest
     working_dir: /backend
@@ -25,11 +25,11 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - studio-startups-network
+      - network1
     expose:
       - "8080"
     command: "mvn clean spring-boot:run"
 
 networks:
-  studio-startups-network:
+  network1:
     driver: bridge
