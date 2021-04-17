@@ -1,0 +1,57 @@
+version: "3"
+services:
+ 
+  db:
+    container_name: studio-startups-database
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: superpassword
+      POSTGRES_DB: startups_studio
+    ports:
+      - "5432:5432"
+    networks:
+      - network1
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      
+  backend:
+    container_name: studio-startups-backend
+    depends_on:
+      - db
+    image: andreyneverovich/studio-startups-backend:latest
+    working_dir: /backend
+    volumes:
+      - ./:/backend
+      - ~/.m2:/root/.m2
+    ports:
+      - "8080:8080"
+    networks:
+      - network1
+    expose:
+      - "8080"
+    command: "mvn clean spring-boot:run"    
+    deploy:
+     mode: replicated
+     replicas: 1
+     update_config:
+       parallelism: 2
+       delay: 10s
+     restart_policy:
+       condition: on-failure
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  network1:
