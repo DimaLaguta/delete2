@@ -1,0 +1,2 @@
+# !/usr/bin/env docker
+swarm join --token SWMTKN-1-3aqw9yzo22va3s5ek55ihi49hudrlhf2ys5fg6csxyc5ecpszk-ajg62f84a5u1iblbobqqyf6rr 192.168.0.4:2377
